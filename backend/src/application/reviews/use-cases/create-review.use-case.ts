@@ -35,6 +35,7 @@ export class CreateReviewUseCase {
 
     const place = await this.placeRepository.findById(placeId);
     if (!place) throw new PlaceNotFoundException(placeId);
+    if (!place.isActive) throw new ForbiddenException('No se pueden dejar reseñas en un local inactivo');
 
     // Un usuario solo puede dejar una reseña por local
     const existing = await this.reviewRepository.findByUserAndPlace(currentUser.sub, placeId);

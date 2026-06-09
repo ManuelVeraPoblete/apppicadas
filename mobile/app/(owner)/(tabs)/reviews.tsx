@@ -7,8 +7,7 @@ import {
 import { placesApi } from '../../../src/api/places.api';
 import { reviewsApi } from '../../../src/api/reviews.api';
 import { Place, Review } from '../../../src/types';
-import { StarRating } from '../../../src/components/ui';
-import { Button } from '../../../src/components/ui';
+import { StarRating, Button } from '../../../src/components/ui';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
 
 export default function OwnerReviewsScreen() {
@@ -31,6 +30,8 @@ export default function OwnerReviewsScreen() {
         const r = await reviewsApi.getByPlace(p.id);
         setReviews(r);
       }
+    } catch {
+      Alert.alert('Error', 'No se pudieron cargar las reseñas');
     } finally {
       setLoading(false);
     }

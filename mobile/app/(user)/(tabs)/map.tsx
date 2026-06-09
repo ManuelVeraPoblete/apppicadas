@@ -41,11 +41,11 @@ export default function MapScreen() {
         ? (await Location.getCurrentPositionAsync({})).coords
         : { latitude: -33.4489, longitude: -70.6693 };
       setUserLocation({ latitude: coords.latitude, longitude: coords.longitude });
-      await fetchNearby({ lat: coords.latitude, lng: coords.longitude, radius: 50000 });
+      await fetchNearby({ lat: coords.latitude, lng: coords.longitude, radius: 5000 });
     } catch {
       const fallback = { latitude: -33.4489, longitude: -70.6693 };
       setUserLocation(fallback);
-      await fetchNearby({ lat: fallback.latitude, lng: fallback.longitude, radius: 50000 });
+      await fetchNearby({ lat: fallback.latitude, lng: fallback.longitude, radius: 5000 });
     } finally {
       setLoading(false);
     }
@@ -110,6 +110,7 @@ export default function MapScreen() {
             </View>
             <TouchableOpacity
               style={styles.favBtn}
+              accessibilityLabel={isFavorite(selected.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
               onPress={() => isFavorite(selected.id)
                 ? removeFavorite(selected.id)
                 : addFavorite(selected.id)
@@ -119,7 +120,7 @@ export default function MapScreen() {
                 {isFavorite(selected.id) ? '❤️' : '🤍'}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelected(null)} style={styles.closeBtn}>
+            <TouchableOpacity onPress={() => setSelected(null)} style={styles.closeBtn} accessibilityLabel="Cerrar">
               <Text style={styles.closeBtnText}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     bottom: 24,
     left: Spacing.lg,
     right: Spacing.lg,
-    backgroundColor: '#FFF3F3',
+    backgroundColor: Colors.errorLight,
     borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.error,
@@ -273,12 +274,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   navBtnWalk: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.successLight,
     borderWidth: 1.5,
     borderColor: Colors.success,
   },
   navBtnDrive: {
-    backgroundColor: '#FFF3E0',
+    backgroundColor: Colors.warningLight,
     borderWidth: 1.5,
     borderColor: Colors.primary,
   },

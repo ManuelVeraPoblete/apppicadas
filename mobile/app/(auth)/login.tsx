@@ -14,7 +14,7 @@ import { Colors, Spacing } from '../../src/theme';
 
 const schema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
+  password: z.string().min(8, 'Mínimo 8 caracteres'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -128,8 +128,6 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1, padding: Spacing.lg },
   header: { alignItems: 'center', paddingVertical: Spacing.xxl },
   logo: { width: 281, height: 281 },
-  title: { fontSize: 32, fontWeight: '800', color: '#FFFFFF', marginTop: Spacing.sm },
-  subtitle: { fontSize: 14, color: 'rgba(255,255,255,0.85)', marginTop: 4 },
   form: {
     backgroundColor: 'rgba(255,255,255,0.50)',
     borderRadius: 20,

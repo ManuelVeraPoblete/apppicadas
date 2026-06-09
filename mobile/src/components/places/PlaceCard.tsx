@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { NearbyPlace, Place } from '../../types';
 import { StarRating } from '../ui/StarRating';
@@ -26,9 +26,18 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, showDistance = fals
       activeOpacity={0.85}
       onPress={() => router.push(`/place/${place.id}`)}
     >
-      <View style={styles.imagePlaceholder}>
-        <Text style={styles.emoji}>🍽️</Text>
-      </View>
+      {place.imageUrl ? (
+        <Image
+          source={{ uri: place.imageUrl }}
+          style={styles.imagePlaceholder}
+          resizeMode="cover"
+          accessibilityLabel={place.name}
+        />
+      ) : (
+        <View style={styles.imagePlaceholder}>
+          <Text style={styles.emoji}>🍽️</Text>
+        </View>
+      )}
 
       <View style={styles.content}>
         <View style={styles.row}>

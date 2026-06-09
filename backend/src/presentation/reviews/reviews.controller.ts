@@ -39,6 +39,7 @@ import { RolesGuard } from '../shared/guards/roles.guard';
 import { CurrentUser, JwtPayload } from '../shared/decorators/current-user.decorator';
 import { Roles } from '../shared/decorators/roles.decorator';
 import { UserRole } from '../../core/domain/enums/user-role.enum';
+import { ReviewEntity } from '../../core/domain/entities/review.entity';
 
 @ApiTags('Reviews')
 @Controller()
@@ -187,7 +188,7 @@ export class ReviewsController {
     };
   }
 
-  private toReviewResponse(review: any): ReviewResponseDto {
+  private toReviewResponse(review: ReviewEntity): ReviewResponseDto {
     return {
       id: review.id,
       placeId: review.placeId,

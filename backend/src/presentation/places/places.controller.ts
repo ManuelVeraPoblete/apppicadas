@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { MenuItemOrmEntity } from '../../infrastructure/database/typeorm/entities/menu-item.orm-entity';
 import { BusinessHourOrmEntity } from '../../infrastructure/database/typeorm/entities/business-hour.orm-entity';
 import { OfferOrmEntity } from '../../infrastructure/database/typeorm/entities/offer.orm-entity';
@@ -41,6 +41,7 @@ import { RolesGuard } from '../shared/guards/roles.guard';
 import { CurrentUser, JwtPayload } from '../shared/decorators/current-user.decorator';
 import { Roles } from '../shared/decorators/roles.decorator';
 import { UserRole } from '../../core/domain/enums/user-role.enum';
+import { PlaceEntity } from '../../core/domain/entities/place.entity';
 
 @ApiTags('Places')
 @Controller('places')
@@ -169,10 +170,10 @@ export class PlacesController {
   @ApiResponse({ status: 200, type: [OfferResponseDto] })
   async getOffers(@Param('id', ParseUUIDPipe) id: string): Promise<OfferResponseDto[]> {
     const now = new Date();
-    const offers = await this.offerRepo.find({ where: { placeId: id, isActive: true } });
-    return offers
-      .filter((o) => o.validTo >= now)
-      .map((o) => ({
+    const offers = await this.offerRepo.find({
+      where: { placeId: id, isActive: true, validTo: MoreThanOrEqual(now) },
+    });
+    return offers.map((o) => ({
         id: o.id,
         placeId: o.placeId,
         title: o.title,
@@ -188,7 +189,7 @@ export class PlacesController {
       }));
   }
 
-  private toResponse(place: any): PlaceResponseDto {
+  private toResponse(place: PlaceEntity): PlaceResponseDto {
     return {
       id: place.id,
       name: place.name,

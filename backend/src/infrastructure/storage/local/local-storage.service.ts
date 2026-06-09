@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -6,6 +6,7 @@ import { IStorageService, UploadResult } from '../../../core/ports/services/stor
 
 @Injectable()
 export class LocalStorageService implements IStorageService {
+  private readonly logger = new Logger(LocalStorageService.name);
   private readonly uploadsDir: string;
   private readonly baseUrl: string;
 
@@ -14,9 +15,17 @@ export class LocalStorageService implements IStorageService {
     if (!fs.existsSync(this.uploadsDir)) {
       fs.mkdirSync(this.uploadsDir, { recursive: true });
     }
-    const port = configService.get<number>('PORT', 3000);
-    const host = configService.get<string>('HOST', '192.168.1.30');
-    this.baseUrl = `http://${host}:${port}/uploads`;
+    const explicitUrl = configService.get<string>('UPLOADS_BASE_URL');
+    if (explicitUrl) {
+      this.baseUrl = explicitUrl;
+    } else {
+      const port = configService.get<number>('PORT', 3000);
+      const host = configService.get<string>('HOST');
+      if (!host) {
+        this.logger.warn('HOST is not configured — upload URLs will use localhost; set HOST to your LAN IP for real-device testing');
+      }
+      this.baseUrl = `http://${host ?? 'localhost'}:${port}/uploads`;
+    }
   }
 
   private safeFilename(raw: string): string {

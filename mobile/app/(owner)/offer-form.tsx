@@ -67,6 +67,17 @@ export default function OfferFormScreen() {
       Alert.alert('Fechas inválidas', 'La fecha de término debe ser posterior al inicio.');
       return;
     }
+    if (needsValue && discountValue) {
+      const numVal = Number(discountValue);
+      if (isNaN(numVal) || numVal <= 0) {
+        Alert.alert('Valor inválido', 'El valor del descuento debe ser un número positivo.');
+        return;
+      }
+      if (discountType === 'PERCENTAGE' && numVal > 100) {
+        Alert.alert('Porcentaje inválido', 'El porcentaje no puede superar 100%.');
+        return;
+      }
+    }
     setSaving(true);
     try {
       const dto = {

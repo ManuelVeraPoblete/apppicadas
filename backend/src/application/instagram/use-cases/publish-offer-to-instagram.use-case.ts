@@ -1,6 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import {
   IInstagramPublishService,
@@ -10,8 +8,15 @@ import {
   IAiImageGenerationService,
   AI_IMAGE_GENERATION_SERVICE,
 } from '../../../core/ports/services/ai-image-generation.service.port';
-import { OfferOrmEntity } from '../../../infrastructure/database/typeorm/entities/offer.orm-entity';
-import { PlaceOrmEntity } from '../../../infrastructure/database/typeorm/entities/place.orm-entity';
+import {
+  IOfferRepository,
+  OFFER_REPOSITORY,
+} from '../../../core/ports/repositories/offer.repository.port';
+import {
+  IPlaceRepository,
+  PLACE_REPOSITORY,
+} from '../../../core/ports/repositories/place.repository.port';
+import { OfferEntity } from '../../../core/domain/entities/offer.entity';
 import { DiscountType } from '../../../core/domain/enums/discount-type.enum';
 
 @Injectable()
@@ -23,17 +28,20 @@ export class PublishOfferToInstagramUseCase {
     private readonly instagram: IInstagramPublishService,
     @Inject(AI_IMAGE_GENERATION_SERVICE)
     private readonly aiImage: IAiImageGenerationService,
-    @InjectRepository(OfferOrmEntity)
-    private readonly offerRepo: Repository<OfferOrmEntity>,
-    @InjectRepository(PlaceOrmEntity)
-    private readonly placeRepo: Repository<PlaceOrmEntity>,
+    @Inject(OFFER_REPOSITORY)
+    private readonly offerRepository: IOfferRepository,
+    @Inject(PLACE_REPOSITORY)
+    private readonly placeRepository: IPlaceRepository,
   ) {}
 
   async execute(offerId: string): Promise<void> {
-    const offer = await this.offerRepo.findOne({ where: { id: offerId } });
-    if (!offer) return;
+    const offer = await this.offerRepository.findById(offerId);
+    if (!offer) {
+      this.logger.warn(`Offer ${offerId} not found — skipping Instagram publish`);
+      return;
+    }
 
-    const place = await this.placeRepo.findOne({ where: { id: offer.placeId } });
+    const place = await this.placeRepository.findById(offer.placeId);
     const placeName = place?.name ?? '';
 
     let imageUrl = offer.imageUrl;
@@ -42,7 +50,7 @@ export class PublishOfferToInstagramUseCase {
       try {
         const prompt = this.buildImagePrompt(offer, placeName);
         imageUrl = await this.aiImage.generateAndUpload(prompt, `offer-${offerId}`);
-        await this.offerRepo.update(offerId, { imageUrl });
+        await this.offerRepository.update(offerId, { imageUrl });
         this.logger.log(`Image generated for offer ${offerId}: ${imageUrl}`);
       } catch (err) {
         this.logger.error(`Failed to generate image for offer ${offerId}`, err);
@@ -54,14 +62,14 @@ export class PublishOfferToInstagramUseCase {
 
     try {
       const postId = await this.instagram.publish({ imageUrl, caption });
-      await this.offerRepo.update(offerId, { instagramPostId: postId });
+      await this.offerRepository.update(offerId, { instagramPostId: postId });
       this.logger.log(`Offer ${offerId} published to Instagram → ${postId}`);
     } catch (err) {
       this.logger.error(`Failed to publish offer ${offerId} to Instagram`, err);
     }
   }
 
-  private buildImagePrompt(offer: OfferOrmEntity, placeName: string): string {
+  private buildImagePrompt(offer: OfferEntity, placeName: string): string {
     const discount = this.formatDiscount(offer);
     const parts = [
       `Create a vibrant, appetizing promotional banner for a food offer.`,
@@ -75,7 +83,7 @@ export class PublishOfferToInstagramUseCase {
     return parts.filter(Boolean).join(' ');
   }
 
-  private buildCaption(offer: OfferOrmEntity, placeName: string): string {
+  private buildCaption(offer: OfferEntity, placeName: string): string {
     const parts: string[] = [];
 
     parts.push(`🔥 ${offer.title}`);
@@ -103,7 +111,7 @@ export class PublishOfferToInstagramUseCase {
     return parts.join('\n');
   }
 
-  private formatDiscount(offer: OfferOrmEntity): string {
+  private formatDiscount(offer: OfferEntity): string {
     switch (offer.discountType) {
       case DiscountType.PERCENTAGE:
         return offer.discountValue ? `${offer.discountValue}% de descuento` : 'Descuento especial';

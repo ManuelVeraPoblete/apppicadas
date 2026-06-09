@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Logger,
   Query,
   Res,
   UseGuards,
@@ -26,6 +27,8 @@ const DEEP_LINK_BASE = 'picacerca://oauth/instagram';
 @ApiTags('Instagram — OAuth')
 @Controller('instagram')
 export class InstagramController {
+  private readonly logger = new Logger(InstagramController.name);
+
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository,
     private readonly jwtService: JwtService,
@@ -92,7 +95,8 @@ export class InstagramController {
 
       await this.userRepo.saveInstagramToken(userId, longToken, metaUserId);
       res.redirect(`${DEEP_LINK_BASE}?status=success`);
-    } catch {
+    } catch (err: unknown) {
+      this.logger.error('Instagram OAuth callback failed', err instanceof Error ? err.stack : String(err));
       res.redirect(`${DEEP_LINK_BASE}?status=error`);
     }
   }

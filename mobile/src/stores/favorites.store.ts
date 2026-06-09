@@ -30,11 +30,18 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   },
 
   addFavorite: async (placeId) => {
-    await favoritesApi.add(placeId);
     set((s) => ({ favoriteIds: new Set([...s.favoriteIds, placeId]) }));
-    // Refresca la lista completa para obtener los datos del local recién agregado
-    const places = await favoritesApi.getAll();
-    set({ favorites: places, favoriteIds: new Set(places.map((p) => p.id)) });
+    try {
+      await favoritesApi.add(placeId);
+      const places = await favoritesApi.getAll();
+      set({ favorites: places, favoriteIds: new Set(places.map((p) => p.id)) });
+    } catch {
+      set((s) => {
+        const ids = new Set(s.favoriteIds);
+        ids.delete(placeId);
+        return { favoriteIds: ids };
+      });
+    }
   },
 
   removeFavorite: async (placeId) => {

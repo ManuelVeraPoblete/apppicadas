@@ -24,7 +24,7 @@ export class NearbyQueryDto {
   @Max(180)
   lng: number;
 
-  @ApiPropertyOptional({ example: 3000, description: 'Radio en metros (default: 3000, máx: 50000)' })
+  @ApiPropertyOptional({ example: 5000, description: 'Radio en metros (default: 5000, máx: 50000)' })
   @IsOptional()
   @IsNumber()
   @IsPositive()

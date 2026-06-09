@@ -6,7 +6,7 @@ import {
 } from '../../../core/ports/repositories/place.repository.port';
 import { NearbyQueryDto } from '../dtos/nearby-query.dto';
 
-const DEFAULT_RADIUS_METERS = 3000;
+const DEFAULT_RADIUS_METERS = 5000;
 
 @Injectable()
 export class GetNearbyPlacesUseCase {

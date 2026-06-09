@@ -30,7 +30,7 @@ export default function ProfileScreen() {
         <Text style={styles.name}>{user?.name}</Text>
         <Text style={styles.email}>{user?.email}</Text>
         <View style={styles.roleBadge}>
-          <Text style={styles.roleText}>👤 Usuario</Text>
+          <Text style={styles.roleText}>{user?.role === 'OWNER' ? '🏪 Dueño de local' : '👤 Usuario'}</Text>
         </View>
       </View>
 

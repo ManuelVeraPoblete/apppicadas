@@ -27,6 +27,7 @@ export interface Place {
   createdById: string;
   createdAt: string;
   menuImageUrl?: string;
+  imageUrl?: string;
 }
 
 export interface NearbyPlace extends Place {

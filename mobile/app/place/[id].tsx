@@ -16,6 +16,9 @@ import { Colors, Spacing, Radius, Shadow } from '../../src/theme';
 
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+const VALID_TABS = ['info', 'menu', 'reviews', 'offers'] as const;
+type TabKey = typeof VALID_TABS[number];
+
 export default function PlaceDetailScreen() {
   const { id, tab } = useLocalSearchParams<{ id: string; tab?: string }>();
   const router = useRouter();
@@ -28,8 +31,8 @@ export default function PlaceDetailScreen() {
   const [hours, setHours] = useState<BusinessHour[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'info' | 'menu' | 'reviews' | 'offers'>(
-    (tab as any) ?? 'info',
+  const [activeTab, setActiveTab] = useState<TabKey>(
+    VALID_TABS.includes(tab as TabKey) ? (tab as TabKey) : 'info',
   );
 
   const [reviewRating, setReviewRating] = useState(5);
@@ -101,17 +104,16 @@ export default function PlaceDetailScreen() {
   if (!place) return null;
 
   const fav = isFavorite(place.id);
-  const TABS = ['info', 'menu', 'reviews', 'offers'] as const;
-  const TAB_LABELS = { info: 'Info', menu: '🍽 Menú', reviews: '⭐ Reseñas', offers: '🏷 Ofertas' };
+  const TAB_LABELS: Record<TabKey, string> = { info: 'Info', menu: '🍽 Menú', reviews: '⭐ Reseñas', offers: '🏷 Ofertas' };
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} accessibilityLabel="Volver">
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         {user && (
-          <TouchableOpacity onPress={handleFavorite} style={styles.favBtn}>
+          <TouchableOpacity onPress={handleFavorite} style={styles.favBtn} accessibilityLabel={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}>
             <Text style={styles.favIcon}>{fav ? '❤️' : '🤍'}</Text>
           </TouchableOpacity>
         )}
@@ -136,7 +138,7 @@ export default function PlaceDetailScreen() {
       </View>
 
       <View style={styles.tabBar}>
-        {TABS.map((t) => (
+        {VALID_TABS.map((t) => (
           <TouchableOpacity
             key={t}
             style={[styles.tab, activeTab === t && styles.tabActive]}
@@ -329,15 +331,6 @@ const styles = StyleSheet.create({
   dayName: { fontSize: 14, fontWeight: '600', color: Colors.text },
   hourText: { fontSize: 14, color: Colors.textSecondary },
   empty: { fontSize: 14, color: Colors.textMuted },
-  menuItem: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: Colors.surface, borderRadius: Radius.md, padding: Spacing.md,
-    marginBottom: Spacing.sm, ...Shadow.sm,
-  },
-  menuInfo: { flex: 1, marginRight: Spacing.md },
-  menuName: { fontSize: 14, fontWeight: '700', color: Colors.text },
-  menuDesc: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  menuPrice: { fontSize: 15, fontWeight: '800', color: Colors.primary },
   alreadyReviewedCard: { backgroundColor: Colors.successLight },
   alreadyReviewedText: { fontSize: 14, color: Colors.success, fontWeight: '600', textAlign: 'center' },
   reviewInput: {

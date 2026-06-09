@@ -1,7 +1,10 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.1.30:3000/api/v1';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
+if (!BASE_URL) {
+  console.warn('[PicáCerca] EXPO_PUBLIC_API_URL is not set — API calls will fail');
+}
 
 export const ACCESS_TOKEN_KEY = 'picacerca_access_token';
 export const REFRESH_TOKEN_KEY = 'picacerca_refresh_token';

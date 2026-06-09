@@ -13,7 +13,7 @@ export default function InstagramOAuthCallback() {
       Alert.alert('Error', 'No se pudo conectar Instagram. Intentá de nuevo.');
     }
     router.replace('/(owner)/(tabs)/profile');
-  }, []);
+  }, [status, router]);
 
   return null;
 }

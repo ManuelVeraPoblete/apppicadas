@@ -36,7 +36,7 @@ export const usePlacesStore = create<PlacesState>((set, get) => ({
       const categories = await categoriesApi.getAll();
       set({ categories });
     } catch {
-      // silently fail
+      set({ error: 'No se pudieron cargar las categorías' });
     }
   },
 
