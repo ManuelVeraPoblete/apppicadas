@@ -12,21 +12,23 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   slug: string;
 
-  @ApiPropertyOptional({ example: 'sandwich' })
+  @ApiPropertyOptional({ example: '🥪' })
   @IsOptional()
   @IsString()
-  icon?: string;
+  emoji?: string;
 }
 
 export class UpdateCategoryDto {
   @ApiPropertyOptional() @IsOptional() @IsString() name?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() slug?: string;
-  @ApiPropertyOptional() @IsOptional() @IsString() icon?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() emoji?: string;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isActive?: boolean;
 }
 
 export class CategoryResponseDto {
   @ApiProperty() id: string;
   @ApiProperty() name: string;
+  @ApiProperty() slug: string;
   @ApiPropertyOptional() emoji?: string;
+  @ApiProperty() isActive: boolean;
 }

@@ -73,3 +73,15 @@ export interface Offer {
   validTo: string;
   isActive: boolean;
 }
+
+export type ReportStatus = 'PENDING' | 'REVIEWED' | 'RESOLVED' | 'REJECTED';
+
+export interface Report {
+  id: string;
+  userId: string;
+  placeId: string;
+  reason: string;
+  description?: string;
+  status: ReportStatus;
+  createdAt: string;
+}

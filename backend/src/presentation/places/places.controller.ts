@@ -5,6 +5,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -42,6 +44,10 @@ import { CurrentUser, JwtPayload } from '../shared/decorators/current-user.decor
 import { Roles } from '../shared/decorators/roles.decorator';
 import { UserRole } from '../../core/domain/enums/user-role.enum';
 import { PlaceEntity } from '../../core/domain/entities/place.entity';
+import {
+  IPlaceRepository,
+  PLACE_REPOSITORY,
+} from '../../core/ports/repositories/place.repository.port';
 
 @ApiTags('Places')
 @Controller('places')
@@ -59,7 +65,41 @@ export class PlacesController {
     private readonly hoursRepo: Repository<BusinessHourOrmEntity>,
     @InjectRepository(OfferOrmEntity)
     private readonly offerRepo: Repository<OfferOrmEntity>,
+    @Inject(PLACE_REPOSITORY)
+    private readonly placeRepository: IPlaceRepository,
   ) {}
+
+  // ─── Admin endpoints ─────────────────────────────────────────────────────────
+
+  @Get('admin/all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MODERATOR)
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Listar todos los locales (ADMIN/MODERATOR)' })
+  @ApiResponse({ status: 200, type: [PlaceResponseDto] })
+  async adminFindAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+  ): Promise<{ data: PlaceResponseDto[]; total: number }> {
+    const { places, total } = await this.placeRepository.findAll(Number(page), Number(limit));
+    return { data: places.map((p) => this.toResponse(p)), total };
+  }
+
+  @Patch('admin/:id/verify')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Verificar un local (solo ADMIN)' })
+  @ApiResponse({ status: 200, type: PlaceResponseDto })
+  async verifyPlace(@Param('id', ParseUUIDPipe) id: string): Promise<PlaceResponseDto> {
+    const place = await this.placeRepository.findById(id);
+    if (!place) throw new NotFoundException('Local no encontrado');
+    await this.placeRepository.verifyPlace(id);
+    const verified = await this.placeRepository.findById(id);
+    return this.toResponse(verified!);
+  }
+
+  // ─── Búsqueda pública ────────────────────────────────────────────────────────
 
   @Get('nearby')
   @ApiOperation({ summary: 'Buscar picadas cercanas por geolocalización' })

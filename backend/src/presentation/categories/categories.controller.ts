@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -53,11 +52,23 @@ export class CategoriesController {
     return orms.map(this.toResponse);
   }
 
+  @Get('all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Listar todas las categorías incluyendo inactivas (ADMIN)' })
+  @ApiResponse({ status: 200, type: [CategoryResponseDto] })
+  async findAllAdmin(): Promise<CategoryResponseDto[]> {
+    const orms = await this.categoryRepo.find({ order: { name: 'ASC' } });
+    return orms.map(this.toResponse);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('JWT')
   @ApiOperation({ summary: 'Crear categoría (solo ADMIN)' })
+  @ApiResponse({ status: 201, type: CategoryResponseDto })
   async create(@Body() dto: CreateCategoryDto): Promise<CategoryResponseDto> {
     const category = new CategoryEntity(
       uuidv4(),
@@ -65,7 +76,7 @@ export class CategoriesController {
       dto.slug,
       true,
       new Date(),
-      dto.icon,
+      dto.emoji,
     );
     const orm = CategoryMapper.toOrm(category);
     const saved = await this.categoryRepo.save(orm);
@@ -77,6 +88,7 @@ export class CategoriesController {
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('JWT')
   @ApiOperation({ summary: 'Actualizar categoría (solo ADMIN)' })
+  @ApiResponse({ status: 200, type: CategoryResponseDto })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCategoryDto,
@@ -84,7 +96,7 @@ export class CategoriesController {
     await this.categoryRepo.update(id, {
       name: dto.name,
       slug: dto.slug,
-      icon: dto.icon,
+      icon: dto.emoji,
       isActive: dto.isActive,
     });
     const updated = await this.categoryRepo.findOne({ where: { id } });
@@ -92,21 +104,41 @@ export class CategoriesController {
     return this.toResponse(updated);
   }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':id/deactivate')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('JWT')
-  @ApiOperation({ summary: 'Desactivar categoría (solo ADMIN)' })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  @ApiOperation({ summary: 'Desactivar categoría (solo ADMIN) — soft delete reversible' })
+  @ApiResponse({ status: 200, type: CategoryResponseDto })
+  async deactivate(@Param('id', ParseUUIDPipe) id: string): Promise<CategoryResponseDto> {
     await this.categoryRepo.update(id, { isActive: false });
+    const updated = await this.categoryRepo.findOne({ where: { id } });
+    if (!updated) throw new NotFoundException('Categoría no encontrada');
+    return this.toResponse(updated);
+  }
+
+  @Patch(':id/activate')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Reactivar categoría desactivada (solo ADMIN)' })
+  @ApiResponse({ status: 200, type: CategoryResponseDto })
+  async activate(@Param('id', ParseUUIDPipe) id: string): Promise<CategoryResponseDto> {
+    await this.categoryRepo.update(id, { isActive: true });
+    const updated = await this.categoryRepo.findOne({ where: { id } });
+    if (!updated) throw new NotFoundException('Categoría no encontrada');
+    return this.toResponse(updated);
   }
 
   private toResponse(orm: CategoryOrmEntity): CategoryResponseDto {
     return {
       id: orm.id,
       name: orm.name,
+      slug: orm.slug,
       emoji: orm.icon ?? undefined,
+      isActive: orm.isActive,
     };
   }
 }

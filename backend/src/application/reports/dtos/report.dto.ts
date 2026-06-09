@@ -29,3 +29,10 @@ export class ReportResponseDto {
   @ApiProperty({ enum: ReportStatus }) status: ReportStatus;
   @ApiProperty() createdAt: Date;
 }
+
+export class PaginatedReportsDto {
+  @ApiProperty({ type: [ReportResponseDto] }) data: ReportResponseDto[];
+  @ApiProperty() total: number;
+  @ApiProperty() page: number;
+  @ApiProperty() limit: number;
+}

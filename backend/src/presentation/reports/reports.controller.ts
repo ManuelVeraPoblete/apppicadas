@@ -1,8 +1,12 @@
 import {
+  BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
+  NotFoundException,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -27,6 +31,7 @@ import { ReportStatus } from '../../core/domain/enums/report-status.enum';
 import { UserRole } from '../../core/domain/enums/user-role.enum';
 import {
   CreateReportDto,
+  PaginatedReportsDto,
   ReportResponseDto,
   UpdateReportStatusDto,
 } from '../../application/reports/dtos/report.dto';
@@ -34,7 +39,12 @@ import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { CurrentUser, JwtPayload } from '../shared/decorators/current-user.decorator';
 import { Roles } from '../shared/decorators/roles.decorator';
-import { NotFoundException } from '@nestjs/common';
+
+// Transiciones de estado permitidas
+const ALLOWED_TRANSITIONS: Partial<Record<ReportStatus, ReportStatus[]>> = {
+  [ReportStatus.PENDING]:  [ReportStatus.REVIEWED, ReportStatus.REJECTED],
+  [ReportStatus.REVIEWED]: [ReportStatus.RESOLVED, ReportStatus.REJECTED],
+};
 
 @ApiTags('Reports')
 @Controller()
@@ -62,6 +72,10 @@ export class ReportsController {
   ): Promise<ReportResponseDto> {
     const place = await this.placeRepo.findOne({ where: { id: placeId } });
     if (!place) throw new NotFoundException('Local no encontrado');
+    if (!place.isActive) throw new NotFoundException('Local no encontrado');
+
+    const duplicate = await this.reportRepo.findOne({ where: { userId: user.sub, placeId } });
+    if (duplicate) throw new ConflictException('Ya enviaste un reporte para este local');
 
     const entity = new ReportEntity(
       uuidv4(),
@@ -87,11 +101,12 @@ export class ReportsController {
   @ApiQuery({ name: 'status', enum: ReportStatus, required: false })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'limit', type: Number, required: false })
+  @ApiResponse({ status: 200, type: PaginatedReportsDto })
   async findAll(
     @Query('status') status?: ReportStatus,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
-  ) {
+  ): Promise<PaginatedReportsDto> {
     const where = status ? { status } : {};
     const [orms, total] = await this.reportRepo.findAndCount({
       where,
@@ -118,7 +133,22 @@ export class ReportsController {
   ): Promise<ReportResponseDto> {
     const existing = await this.reportRepo.findOne({ where: { id } });
     if (!existing) throw new NotFoundException('Reporte no encontrado');
+
+    const allowed = ALLOWED_TRANSITIONS[existing.status] ?? [];
+    if (!allowed.includes(dto.status)) {
+      throw new BadRequestException(
+        `Transición inválida: ${existing.status} → ${dto.status}. ` +
+        `Permitidas: ${allowed.length ? allowed.join(', ') : 'ninguna (estado terminal)'}`,
+      );
+    }
+
     await this.reportRepo.update(id, { status: dto.status });
+
+    // Cuando un reporte se resuelve, el local denunciado se desactiva
+    if (dto.status === ReportStatus.RESOLVED) {
+      await this.placeRepo.update(existing.placeId, { isActive: false });
+    }
+
     const updated = await this.reportRepo.findOneOrFail({ where: { id } });
     return this.toResponse(ReportMapper.toDomain(updated));
   }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Redirect } from 'expo-router';
+import { Redirect, type Href } from 'expo-router';
 import { useAuthStore } from '../src/stores';
 import { Colors } from '../src/theme';
 
@@ -25,6 +25,10 @@ export default function Index() {
 
   if (user?.role === 'OWNER') {
     return <Redirect href="/(owner)/(tabs)/my-place" />;
+  }
+
+  if (user?.role === 'ADMIN' || user?.role === 'MODERATOR') {
+    return <Redirect href={'/(admin)/(tabs)/reports' as Href} />;
   }
 
   return <Redirect href="/(user)/(tabs)/explore" />;
