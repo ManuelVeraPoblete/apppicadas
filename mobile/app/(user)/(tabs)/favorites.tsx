@@ -4,6 +4,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-nativ
 import { useFocusEffect } from '@react-navigation/core';
 import { useFavoritesStore, useAuthStore } from '../../../src/stores';
 import { PlaceCard } from '../../../src/components/places';
+import { GradientHeader } from '../../../src/components/ui';
 import { Colors, Spacing } from '../../../src/theme';
 
 export default function FavoritesScreen() {
@@ -18,10 +19,12 @@ export default function FavoritesScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>❤️ Mis favoritos</Text>
-        <Text style={styles.subtitle}>{favorites.length} picada{favorites.length !== 1 ? 's' : ''} guardada{favorites.length !== 1 ? 's' : ''}</Text>
-      </View>
+      <GradientHeader>
+        <Text style={styles.headerTitle}>❤️ Mis favoritos</Text>
+        <Text style={styles.headerSubtitle}>
+          {favorites.length} picada{favorites.length !== 1 ? 's' : ''} guardada{favorites.length !== 1 ? 's' : ''}
+        </Text>
+      </GradientHeader>
 
       {isLoading ? (
         <View style={styles.center}>
@@ -47,11 +50,10 @@ export default function FavoritesScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
-  header: { padding: Spacing.lg, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  title: { fontSize: 22, fontWeight: '800', color: Colors.text },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
-  list: { padding: Spacing.md },
+  safe: { flex: 1, backgroundColor: '#F5F0EB' },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 2 },
+  headerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
+  list: { padding: Spacing.md, paddingBottom: 40 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   empty: { alignItems: 'center', paddingTop: 80, paddingHorizontal: Spacing.xl },
   emptyEmoji: { fontSize: 56 },
