@@ -33,6 +33,8 @@ export default function LoginScreen() {
       const { user: loggedUser } = useAuthStore.getState();
       if (loggedUser?.role === 'OWNER') {
         router.replace('/(owner)/(tabs)/my-place');
+      } else if (loggedUser?.role === 'ADMIN' || loggedUser?.role === 'MODERATOR') {
+        router.replace('/(admin)/(tabs)/reports' as any);
       } else {
         router.replace('/(user)/(tabs)/explore');
       }
