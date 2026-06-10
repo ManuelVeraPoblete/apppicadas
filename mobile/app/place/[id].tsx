@@ -9,7 +9,6 @@ import { placesApi } from '../../src/api/places.api';
 import { reviewsApi } from '../../src/api/reviews.api';
 import { Place, Review, MenuItem, BusinessHour, Offer } from '../../src/types';
 import { StarRating } from '../../src/components/ui/StarRating';
-import { PriceBadge } from '../../src/components/ui/Badge';
 import { Button } from '../../src/components/ui/Button';
 import { useFavoritesStore, useAuthStore } from '../../src/stores';
 import { Colors, Spacing, Radius, Shadow } from '../../src/theme';
@@ -108,33 +107,47 @@ export default function PlaceDetailScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} accessibilityLabel="Volver">
-          <Text style={styles.backText}>←</Text>
-        </TouchableOpacity>
-        {user && (
-          <TouchableOpacity onPress={handleFavorite} style={styles.favBtn} accessibilityLabel={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}>
-            <Text style={styles.favIcon}>{fav ? '❤️' : '🤍'}</Text>
+      {/* Compact orange header */}
+      <View style={styles.placeHeader}>
+        <View style={styles.placeHeaderTopRow}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} accessibilityLabel="Volver">
+            <Text style={styles.backText}>← Volver</Text>
           </TouchableOpacity>
-        )}
-      </View>
-
-      <View style={styles.hero}>
-        <Text style={styles.heroEmoji}>🍽️</Text>
-        <View style={styles.heroInfo}>
-          <View style={styles.heroRow}>
-            <Text style={styles.name}>{place.name}</Text>
-            {place.isVerified && <Text style={styles.verified}>✓ Verificado</Text>}
-          </View>
-          <Text style={styles.address}>{place.address}, {place.city}</Text>
-          <View style={styles.metaRow}>
-            <StarRating value={place.ratingAverage} size={15} />
-            <Text style={styles.ratingText}>{place.ratingAverage.toFixed(1)} ({place.reviewCount})</Text>
-            <PriceBadge priceRange={place.priceRange} />
-          </View>
-          {place.phone && <Text style={styles.contact}>📞 {place.phone}</Text>}
-          {place.instagram && <Text style={styles.contact}>📸 @{place.instagram}</Text>}
+          {user && (
+            <TouchableOpacity onPress={handleFavorite} style={styles.favBtn} accessibilityLabel={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}>
+              <Text style={styles.favIcon}>{fav ? '❤️' : '🤍'}</Text>
+            </TouchableOpacity>
+          )}
         </View>
+        <View style={styles.placeHeaderContent}>
+          <View style={styles.emojiCircle}>
+            <Text style={styles.emojiCircleText}>🍽️</Text>
+          </View>
+          <View style={styles.placeHeaderInfo}>
+            <Text style={styles.placeName} numberOfLines={2}>{place.name}</Text>
+            <Text style={styles.placeAddress}>{place.address}, {place.city}</Text>
+            <View style={styles.placeMetaRow}>
+              <StarRating value={place.ratingAverage} size={13} />
+              <Text style={styles.placeRatingText}>{place.ratingAverage.toFixed(1)} ({place.reviewCount})</Text>
+              {place.priceRange && <Text style={styles.placePriceText}>{place.priceRange === 'LOW' ? '$' : place.priceRange === 'MEDIUM' ? '$$' : '$$$'}</Text>}
+              {place.isVerified && <Text style={styles.placeVerifiedText}>✓</Text>}
+            </View>
+          </View>
+        </View>
+        {(place.phone || place.instagram) && (
+          <View style={styles.contactChips}>
+            {place.phone && (
+              <View style={styles.contactChip}>
+                <Text style={styles.contactChipText}>📞 {place.phone}</Text>
+              </View>
+            )}
+            {place.instagram && (
+              <View style={styles.contactChip}>
+                <Text style={styles.contactChipText}>📸 @{place.instagram}</Text>
+              </View>
+            )}
+          </View>
+        )}
       </View>
 
       <View style={styles.tabBar}>
@@ -289,29 +302,75 @@ export default function PlaceDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  topBar: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.md, backgroundColor: Colors.surface,
+  placeHeader: {
+    backgroundColor: '#E85D04',
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 16,
+  },
+  placeHeaderTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   backBtn: { padding: 4 },
-  backText: { fontSize: 24, color: Colors.primary },
+  backText: { fontSize: 15, fontWeight: '700', color: 'white' },
   favBtn: { padding: 4 },
-  favIcon: { fontSize: 24 },
-  hero: {
-    flexDirection: 'row', gap: Spacing.md, padding: Spacing.md,
-    backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border,
+  favIcon: { fontSize: 22 },
+  placeHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  heroEmoji: { fontSize: 56, width: 70, textAlign: 'center' },
-  heroInfo: { flex: 1 },
-  heroRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, flexWrap: 'wrap' },
-  name: { fontSize: 17, fontWeight: '800', color: Colors.text, flex: 1 },
-  verified: { fontSize: 11, color: Colors.success, fontWeight: '600' },
-  address: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginTop: 4, flexWrap: 'wrap' },
-  ratingText: { fontSize: 12, color: Colors.textMuted },
-  contact: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  emojiCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+    flexShrink: 0,
+  },
+  emojiCircleText: { fontSize: 28 },
+  placeHeaderInfo: { flex: 1 },
+  placeName: { fontSize: 16, fontWeight: '900', color: 'white', lineHeight: 20 },
+  placeAddress: { fontSize: 11, color: 'rgba(255,255,255,0.75)', marginTop: 2 },
+  placeMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 4,
+    flexWrap: 'wrap',
+  },
+  placeRatingText: { fontSize: 11, color: 'rgba(255,255,255,0.85)' },
+  placePriceText: { fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: '700' },
+  placeVerifiedText: { fontSize: 11, color: '#A5D6A7', fontWeight: '700' },
+  contactChips: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+    flexWrap: 'wrap',
+  },
+  contactChip: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  contactChipText: { fontSize: 11, color: '#444' },
   tabBar: {
     flexDirection: 'row', backgroundColor: Colors.surface,
     borderBottomWidth: 1, borderBottomColor: Colors.border,
@@ -320,10 +379,10 @@ const styles = StyleSheet.create({
   tabActive: { borderBottomWidth: 2, borderBottomColor: Colors.primary },
   tabText: { fontSize: 12, color: Colors.textMuted, fontWeight: '500' },
   tabTextActive: { color: Colors.primary, fontWeight: '700' },
-  content: { padding: Spacing.md, paddingBottom: 40 },
+  content: { padding: Spacing.md, paddingBottom: 40, backgroundColor: Colors.warmBackground },
   card: {
     backgroundColor: Colors.surface, borderRadius: Radius.lg,
-    padding: Spacing.md, marginBottom: Spacing.md, ...Shadow.sm,
+    padding: Spacing.md, marginBottom: Spacing.md, ...Shadow.md,
   },
   cardTitle: { fontSize: 15, fontWeight: '700', color: Colors.text, marginBottom: Spacing.sm },
   desc: { fontSize: 14, color: Colors.textSecondary, lineHeight: 20 },
