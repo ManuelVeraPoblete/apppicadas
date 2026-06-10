@@ -50,7 +50,7 @@ export default function FavoritesScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F5F0EB' },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
   headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 2 },
   headerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
   list: { padding: Spacing.md, paddingBottom: 40 },

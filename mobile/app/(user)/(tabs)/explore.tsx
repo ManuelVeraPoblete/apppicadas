@@ -108,7 +108,7 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F5F0EB' },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
   headerBadge: { fontSize: 11, color: 'rgba(255,255,255,0.85)', marginBottom: 4 },
   headerTitle: { fontSize: 22, fontWeight: '900', color: 'white', lineHeight: 28, marginBottom: 12 },
   searchBar: {

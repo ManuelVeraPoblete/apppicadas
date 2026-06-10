@@ -33,7 +33,9 @@ export default function ProfileScreen() {
         <Text style={styles.name}>{user?.name}</Text>
         <Text style={styles.email}>{user?.email}</Text>
         <View style={styles.roleBadge}>
-          <Text style={styles.roleText}>👤 Usuario</Text>
+          <Text style={styles.roleText}>
+            {user?.role === 'OWNER' ? '🏪 Dueño de local' : '👤 Usuario'}
+          </Text>
         </View>
       </GradientHeader>
 
@@ -48,7 +50,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F5F0EB' },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
   headerPadding: { paddingBottom: 24 },
   avatarContainer: { alignItems: 'center', marginBottom: Spacing.md },
   avatar: {
