@@ -42,7 +42,9 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, showDistance = fals
         )}
         {showDistance && distanceMeters != null && (
           <View style={styles.distanceBadge}>
-            <Text style={styles.distanceText}>{formatDistance(distanceMeters)}</Text>
+            <View style={styles.distancePill}>
+              <Text style={styles.distanceText}>{formatDistance(distanceMeters)}</Text>
+            </View>
           </View>
         )}
       </View>
@@ -105,15 +107,17 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
-  distanceText: {
-    fontSize: 8,
-    fontWeight: '700',
-    color: 'white',
+  distancePill: {
     backgroundColor: 'rgba(0,0,0,0.55)',
     borderRadius: 5,
     paddingHorizontal: 5,
     paddingVertical: 1,
     overflow: 'hidden',
+  },
+  distanceText: {
+    fontSize: 8,
+    fontWeight: '700',
+    color: 'white',
   },
   content: {
     flex: 1,

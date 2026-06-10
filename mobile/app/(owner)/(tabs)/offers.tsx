@@ -195,10 +195,6 @@ export default function OwnerOffersScreen() {
   }
 
   const sections = categorize(offers);
-  const now = new Date();
-  const activeCount = offers.filter((o) =>
-    o.isActive && new Date(o.validTo) >= now && new Date(o.validFrom) <= now,
-  ).length;
 
   return (
     <SafeAreaView style={styles.safe}>
