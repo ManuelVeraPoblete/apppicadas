@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Spacing } from '../../theme';
 
 interface GradientHeaderProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ interface GradientHeaderProps {
 
 export const GradientHeader: React.FC<GradientHeaderProps> = ({ children, dark = false, style }) => (
   <LinearGradient
-    colors={dark ? ['#5A1800', '#8B2500', '#C04A00'] : ['#C04A00', '#E85D04', '#FF7A1A']}
+    colors={dark ? ['#5A1800', '#8B2500', '#C04A00'] : [Colors.primaryDark, Colors.primary, Colors.primaryLight]}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 1 }}
     style={[styles.gradient, style]}
@@ -23,8 +24,8 @@ export const GradientHeader: React.FC<GradientHeaderProps> = ({ children, dark =
 
 const styles = StyleSheet.create({
   gradient: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.md,
     paddingTop: 12,
     overflow: 'hidden',
   },
