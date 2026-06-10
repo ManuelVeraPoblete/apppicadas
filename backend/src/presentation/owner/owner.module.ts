@@ -8,7 +8,10 @@ import { BusinessHourOrmEntity } from '../../infrastructure/database/typeorm/ent
 import { OfferOrmEntity } from '../../infrastructure/database/typeorm/entities/offer.orm-entity';
 import { StorageModule } from '../../infrastructure/storage/storage.module';
 import { InstagramModule } from '../instagram/instagram.module';
+import { PlacesModule } from '../places/places.module';
 import { PublishOfferToInstagramUseCase } from '../../application/instagram/use-cases/publish-offer-to-instagram.use-case';
+import { OfferRepository } from '../../infrastructure/database/typeorm/repositories/offer.repository';
+import { OFFER_REPOSITORY } from '../../core/ports/repositories/offer.repository.port';
 
 @Module({
   imports: [
@@ -21,8 +24,12 @@ import { PublishOfferToInstagramUseCase } from '../../application/instagram/use-
     ]),
     StorageModule,
     InstagramModule,
+    PlacesModule,
   ],
   controllers: [OwnerController],
-  providers: [PublishOfferToInstagramUseCase],
+  providers: [
+    { provide: OFFER_REPOSITORY, useClass: OfferRepository },
+    PublishOfferToInstagramUseCase,
+  ],
 })
 export class OwnerModule {}
