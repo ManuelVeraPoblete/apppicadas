@@ -6,7 +6,8 @@ import { useFocusEffect } from 'expo-router';
 import * as Linking from 'expo-linking';
 import { useAuthStore } from '../../../src/stores';
 import { ownerApi } from '../../../src/api/owner.api';
-import { Colors, Spacing, Radius } from '../../../src/theme';
+import { GradientHeader } from '../../../src/components/ui';
+import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
 
 export default function OwnerProfileScreen() {
   const { user, logout } = useAuthStore();
@@ -56,16 +57,18 @@ export default function OwnerProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() ?? '?'}</Text>
+      <GradientHeader style={styles.headerPadding}>
+        <View style={styles.avatarContainer}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() ?? '?'}</Text>
+          </View>
         </View>
         <Text style={styles.name}>{user?.name}</Text>
         <Text style={styles.email}>{user?.email}</Text>
         <View style={styles.roleBadge}>
           <Text style={styles.roleText}>🏪 Dueño de local</Text>
         </View>
-      </View>
+      </GradientHeader>
 
       <View style={styles.section}>
         {instagramConnected === null ? (
@@ -105,21 +108,33 @@ export default function OwnerProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
-  header: { alignItems: 'center', padding: Spacing.xl, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 32, fontWeight: '700', color: Colors.textInverse },
-  name: { fontSize: 20, fontWeight: '700', color: Colors.text, marginTop: Spacing.md },
-  email: { fontSize: 14, color: Colors.textSecondary, marginTop: 4 },
-  roleBadge: { marginTop: Spacing.sm, paddingHorizontal: Spacing.md, paddingVertical: 4, backgroundColor: Colors.secondary, borderRadius: Radius.full },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
+  headerPadding: { paddingBottom: 24 },
+  avatarContainer: { alignItems: 'center', marginBottom: Spacing.md },
+  avatar: {
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: 'white', alignItems: 'center', justifyContent: 'center',
+    ...Shadow.md,
+  },
+  avatarText: { fontSize: 32, fontWeight: '700', color: Colors.primary },
+  name: { fontSize: 20, fontWeight: '700', color: 'white', textAlign: 'center' },
+  email: { fontSize: 14, color: 'rgba(255,255,255,0.8)', marginTop: 4, textAlign: 'center' },
+  roleBadge: {
+    marginTop: Spacing.sm, alignSelf: 'center',
+    paddingHorizontal: Spacing.md, paddingVertical: 4,
+    backgroundColor: 'white', borderRadius: Radius.full,
+  },
   roleText: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
-  section: { margin: Spacing.lg, backgroundColor: Colors.surface, borderRadius: Radius.lg },
+  section: {
+    margin: Spacing.lg, backgroundColor: Colors.surface,
+    borderRadius: Radius.lg, ...Shadow.sm,
+  },
   row: { flexDirection: 'row', alignItems: 'center', padding: Spacing.md, gap: Spacing.md },
   rowContent: { flex: 1 },
   rowIcon: { fontSize: 20 },
   rowLabel: { fontSize: 15, fontWeight: '500', color: Colors.text },
   rowSub: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  connectedBadge: { paddingHorizontal: Spacing.sm, paddingVertical: 2, backgroundColor: '#e6f4ea', borderRadius: Radius.sm },
-  connectedText: { fontSize: 12, color: '#1e7e34', fontWeight: '600' },
+  connectedBadge: { paddingHorizontal: Spacing.sm, paddingVertical: 2, backgroundColor: Colors.successLight, borderRadius: Radius.sm },
+  connectedText: { fontSize: 12, color: Colors.success, fontWeight: '600' },
   divider: { height: 1, backgroundColor: Colors.border, marginHorizontal: Spacing.md },
 });

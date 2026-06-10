@@ -12,6 +12,7 @@ import { placesApi } from '../../../src/api/places.api';
 import { ownerApi } from '../../../src/api/owner.api';
 import { Place, MenuItem } from '../../../src/types';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
+import { GradientHeader } from '../../../src/components/ui';
 
 const EMPTY_FORM = { name: '', desc: '', price: '', available: true };
 
@@ -181,14 +182,25 @@ export default function OwnerMenuScreen() {
       {hasImage && <View style={styles.overlay} />}
 
       <SafeAreaView style={styles.safeTransparent}>
-        <View style={[styles.header, hasImage && styles.headerTransparent]}>
-          <Text style={[styles.title, hasImage && styles.titleLight]}>🍽️ Menú</Text>
-          <TouchableOpacity style={styles.cameraBtn} onPress={handleUploadMenuImage} disabled={uploadingImage}>
-            {uploadingImage
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.cameraBtnText}>{hasImage ? '📷' : '📷 Subir foto'}</Text>}
-          </TouchableOpacity>
-        </View>
+        {hasImage ? (
+          <View style={[styles.header, styles.headerTransparent]}>
+            <Text style={[styles.title, styles.titleLight]}>🍽️ Menú</Text>
+            <TouchableOpacity style={styles.cameraBtn} onPress={handleUploadMenuImage} disabled={uploadingImage}>
+              {uploadingImage
+                ? <ActivityIndicator color="#fff" size="small" />
+                : <Text style={styles.cameraBtnText}>📷</Text>}
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <GradientHeader style={styles.gradientHeaderRow}>
+            <Text style={styles.headerTitle}>🍽️ Menú</Text>
+            <TouchableOpacity style={styles.cameraBtn} onPress={handleUploadMenuImage} disabled={uploadingImage}>
+              {uploadingImage
+                ? <ActivityIndicator color="#fff" size="small" />
+                : <Text style={styles.cameraBtnText}>📷 Subir foto</Text>}
+            </TouchableOpacity>
+          </GradientHeader>
+        )}
 
         <FlatList
           data={menu}
@@ -311,9 +323,9 @@ export default function OwnerMenuScreen() {
 }
 
 const styles = StyleSheet.create({
-  bg:              { flex: 1, backgroundColor: Colors.background },
+  bg:              { flex: 1, backgroundColor: Colors.warmBackground },
   overlay:         { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
-  safe:            { flex: 1, backgroundColor: Colors.background },
+  safe:            { flex: 1, backgroundColor: Colors.warmBackground },
   safeTransparent: { flex: 1 },
   center:          { flex: 1, alignItems: 'center', justifyContent: 'center' },
   noPlaceEmoji:    { fontSize: 56 },
@@ -322,6 +334,8 @@ const styles = StyleSheet.create({
     textAlign: 'center', padding: Spacing.lg,
   },
 
+  gradientHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 14 },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white' },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     padding: Spacing.lg, backgroundColor: Colors.surface,

@@ -11,7 +11,7 @@ import * as Location from 'expo-location';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { placesApi, categoriesApi } from '../../../src/api';
 import { Place, Category } from '../../../src/types';
-import { Button, Input } from '../../../src/components/ui';
+import { Button, Input, GradientHeader } from '../../../src/components/ui';
 import { Colors, Spacing, Radius } from '../../../src/theme';
 
 const schema = z.object({
@@ -175,18 +175,18 @@ export default function MyPlaceScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>{place ? '✏️ Editar mi local' : '🏪 Crear mi local'}</Text>
-          {place && (
-            <View style={styles.stats}>
-              <Text style={styles.stat}>⭐ {place.ratingAverage.toFixed(1)}</Text>
-              <Text style={styles.stat}>💬 {place.reviewCount} reseñas</Text>
-              {place.isVerified && <Text style={[styles.stat, { color: Colors.success }]}>✓ Verificado</Text>}
-            </View>
-          )}
-        </View>
+      <GradientHeader>
+        <Text style={styles.headerTitle}>{place ? '✏️ Editar mi local' : '🏪 Crear mi local'}</Text>
+        {place && (
+          <View style={styles.headerStats}>
+            <Text style={styles.headerStat}>⭐ {place.ratingAverage.toFixed(1)}</Text>
+            <Text style={styles.headerStat}>💬 {place.reviewCount} reseñas</Text>
+            {place.isVerified && <Text style={styles.headerStat}>✓ Verificado</Text>}
+          </View>
+        )}
+      </GradientHeader>
 
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.form}>
           <Controller
             control={control}
@@ -363,14 +363,13 @@ export default function MyPlaceScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  scroll: { padding: Spacing.lg, paddingBottom: 40 },
-  header: { marginBottom: Spacing.lg },
-  title: { fontSize: 22, fontWeight: '800', color: Colors.text },
-  stats: { flexDirection: 'row', gap: Spacing.md, marginTop: 6 },
-  stat: { fontSize: 13, color: Colors.textSecondary, fontWeight: '600' },
-  form: { backgroundColor: Colors.surface, borderRadius: 20, padding: Spacing.lg },
+  scroll: { paddingBottom: 40 },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 4 },
+  headerStats: { flexDirection: 'row', gap: Spacing.md, flexWrap: 'wrap' },
+  headerStat: { fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: '600' },
+  form: { backgroundColor: Colors.surface, borderRadius: 20, padding: Spacing.lg, margin: Spacing.lg },
   fieldLabel: { fontSize: 14, fontWeight: '500', color: Colors.text, marginBottom: Spacing.xs },
   textAreaWrapper: { marginBottom: Spacing.md },
   textArea: {

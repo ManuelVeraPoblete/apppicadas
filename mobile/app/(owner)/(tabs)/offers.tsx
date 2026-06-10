@@ -11,6 +11,7 @@ import { placesApi } from '../../../src/api/places.api';
 import { ownerApi } from '../../../src/api/owner.api';
 import { Place, Offer } from '../../../src/types';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
+import { GradientHeader } from '../../../src/components/ui';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -201,10 +202,10 @@ export default function OwnerOffersScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>🏷️ Ofertas</Text>
-        <Text style={styles.headerSub}>{activeCount} activa{activeCount !== 1 ? 's' : ''} · {offers.length} en total</Text>
-      </View>
+      <GradientHeader>
+        <Text style={styles.headerTitle}>🏷️ Mis ofertas</Text>
+        {place && <Text style={styles.headerSubtitle}>{place.name}</Text>}
+      </GradientHeader>
 
       <SectionList
         sections={sections}
@@ -232,15 +233,10 @@ export default function OwnerOffersScreen() {
 // ─── styles ─────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: Colors.background },
+  safe:   { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  header: {
-    flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between',
-    padding: Spacing.lg, backgroundColor: Colors.surface,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-  },
-  headerTitle: { fontSize: 22, fontWeight: '800', color: Colors.text },
-  headerSub:   { fontSize: 13, color: Colors.textMuted },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 2 },
+  headerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
 
   list: { padding: Spacing.md, paddingBottom: 100 },
 

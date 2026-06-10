@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ownerApi } from '../../src/api/owner.api';
 import { Offer } from '../../src/types';
 import { Colors, Spacing, Radius, Shadow } from '../../src/theme';
+import { GradientHeader } from '../../src/components/ui';
 
 const DISCOUNT_TYPES: { value: Offer['discountType']; label: string; icon: string; color: string }[] = [
   { value: 'PERCENTAGE',  label: '% Porcentaje', icon: '🏷️', color: Colors.primary },
@@ -103,13 +104,15 @@ export default function OfferFormScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{isEditing ? 'Editar oferta' : 'Nueva oferta'}</Text>
-        <View style={{ width: 40 }} />
-      </View>
+      <GradientHeader style={styles.headerRow}>
+        <View style={styles.headerRowContent}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{isEditing ? 'Editar oferta' : 'Nueva oferta'}</Text>
+          <View style={{ width: 40 }} />
+        </View>
+      </GradientHeader>
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Título *</Text>
@@ -232,15 +235,12 @@ export default function OfferFormScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: Spacing.md, backgroundColor: Colors.surface,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-  },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
+  headerRow: { paddingTop: 8, paddingBottom: 12 },
+  headerRowContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   backBtn: { width: 40, padding: 4 },
-  backText: { fontSize: 24, color: Colors.primary },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: Colors.text },
+  backText: { fontSize: 22, color: 'white', fontWeight: '700' },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: 'white' },
   content: { padding: Spacing.lg, paddingBottom: 48 },
   label: { fontSize: 13, fontWeight: '600', color: Colors.textSecondary, marginBottom: Spacing.xs, marginTop: Spacing.md },
   input: {

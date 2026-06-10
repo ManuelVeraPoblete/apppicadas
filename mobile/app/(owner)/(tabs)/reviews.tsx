@@ -7,7 +7,7 @@ import {
 import { placesApi } from '../../../src/api/places.api';
 import { reviewsApi } from '../../../src/api/reviews.api';
 import { Place, Review } from '../../../src/types';
-import { StarRating, Button } from '../../../src/components/ui';
+import { StarRating, Button, GradientHeader } from '../../../src/components/ui';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
 
 export default function OwnerReviewsScreen() {
@@ -76,13 +76,13 @@ export default function OwnerReviewsScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>💬 Reseñas</Text>
-        <View style={styles.summary}>
-          <Text style={styles.avgRating}>⭐ {avgRating}</Text>
-          <Text style={styles.reviewCount}>{reviews.length} reseñas</Text>
+      <GradientHeader>
+        <Text style={styles.headerTitle}>💬 Reseñas</Text>
+        <View style={styles.headerSummary}>
+          <Text style={styles.headerStat}>⭐ {avgRating}</Text>
+          <Text style={styles.headerStat}>{reviews.length} reseñas</Text>
         </View>
-      </View>
+      </GradientHeader>
 
       <FlatList
         data={reviews}
@@ -156,14 +156,12 @@ export default function OwnerReviewsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+  safe: { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  header: { padding: Spacing.lg, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  title: { fontSize: 22, fontWeight: '800', color: Colors.text },
-  summary: { flexDirection: 'row', gap: Spacing.md, marginTop: 4 },
-  avgRating: { fontSize: 14, fontWeight: '700', color: Colors.primary },
-  reviewCount: { fontSize: 14, color: Colors.textSecondary },
-  list: { padding: Spacing.md },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 4 },
+  headerSummary: { flexDirection: 'row', gap: Spacing.md },
+  headerStat: { fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: '600' },
+  list: { padding: Spacing.md, paddingBottom: 40 },
   reviewCard: { backgroundColor: Colors.surface, borderRadius: Radius.lg, padding: Spacing.md, marginBottom: Spacing.sm, ...Shadow.sm },
   reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm },
   avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center' },
