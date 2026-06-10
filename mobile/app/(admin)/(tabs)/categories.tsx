@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white' },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 4 },
   addBtn: { backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
   addBtnText: { color: 'white', fontWeight: '700', fontSize: 14 },
 

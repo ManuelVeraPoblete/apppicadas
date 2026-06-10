@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: Spacing.xxl },
   emptyText: { fontSize: 15, color: Colors.textMuted },
 
-  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 2 },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 4 },
   headerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginBottom: 8 },
   searchBar: {
     backgroundColor: 'rgba(255,255,255,0.2)',
