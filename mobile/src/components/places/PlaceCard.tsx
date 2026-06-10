@@ -27,7 +27,6 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, showDistance = fals
       activeOpacity={0.85}
       onPress={() => router.push(`/place/${place.id}`)}
     >
-      {/* Imagen izquierda */}
       <View style={styles.imageContainer}>
         {place.imageUrl ? (
           <Image
@@ -48,7 +47,6 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, showDistance = fals
         )}
       </View>
 
-      {/* Contenido derecho */}
       <View style={styles.content}>
         <View style={styles.nameRow}>
           <Text style={styles.name} numberOfLines={1}>{place.name}</Text>
@@ -97,6 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFB347',
     minHeight: 90,
+    overflow: 'hidden',
   },
   emoji: { fontSize: 32 },
   distanceBadge: {
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   priceBadge: {
-    backgroundColor: '#FFF3E6',
+    backgroundColor: Colors.warningLight,
     borderRadius: 6,
     paddingHorizontal: 5,
     paddingVertical: 1,
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
   verifiedBadge: {
     marginTop: 4,
     alignSelf: 'flex-start',
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.successLight,
     borderRadius: 6,
     paddingHorizontal: 5,
     paddingVertical: 1,
@@ -170,6 +169,6 @@ const styles = StyleSheet.create({
   verifiedText: {
     fontSize: 9,
     fontWeight: '600',
-    color: '#2E7D32',
+    color: Colors.success,
   },
 });
