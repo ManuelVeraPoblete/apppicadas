@@ -7,6 +7,7 @@ import {
 import * as Location from 'expo-location';
 import { usePlacesStore } from '../../../src/stores';
 import { PlaceCard } from '../../../src/components/places';
+import { GradientHeader } from '../../../src/components/ui';
 import { Colors, Spacing, Radius } from '../../../src/theme';
 
 export default function ExploreScreen() {
@@ -42,8 +43,9 @@ export default function ExploreScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Explorar picadas</Text>
+      <GradientHeader>
+        <Text style={styles.headerBadge}>🔥 {nearbyPlaces.length} picadas cerca tuyo</Text>
+        <Text style={styles.headerTitle}>Descubre tu{'\n'}próxima picada</Text>
         <View style={styles.searchBar}>
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
@@ -54,7 +56,7 @@ export default function ExploreScreen() {
             onChangeText={setSearch}
           />
         </View>
-      </View>
+      </GradientHeader>
 
       {locationError && (
         <View style={styles.warningBox}>
@@ -67,7 +69,7 @@ export default function ExploreScreen() {
           style={[styles.chip, !selectedCategory && styles.chipActive]}
           onPress={() => { setSelectedCategory(null); loadNearby(null); }}
         >
-          <Text style={[styles.chipText, !selectedCategory && styles.chipTextActive]}>Todos</Text>
+          <Text style={[styles.chipText, !selectedCategory && styles.chipTextActive]}>🍽 Todos</Text>
         </TouchableOpacity>
         {categories.map((cat) => (
           <TouchableOpacity
@@ -106,18 +108,23 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
-  header: { padding: Spacing.lg, backgroundColor: Colors.surface },
-  title: { fontSize: 22, fontWeight: '800', color: Colors.text, marginBottom: Spacing.md },
+  safe: { flex: 1, backgroundColor: '#F5F0EB' },
+  headerBadge: { fontSize: 11, color: 'rgba(255,255,255,0.85)', marginBottom: 4 },
+  headerTitle: { fontSize: 22, fontWeight: '900', color: 'white', lineHeight: 28, marginBottom: 12 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surfaceAlt,
-    borderRadius: Radius.full,
+    backgroundColor: 'white',
+    borderRadius: 14,
     paddingHorizontal: Spacing.md,
     height: 44,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  searchIcon: { fontSize: 16, marginRight: 6 },
+  searchIcon: { fontSize: 15, marginRight: 6 },
   searchInput: { flex: 1, fontSize: 14, color: Colors.text },
   warningBox: {
     margin: Spacing.md,
@@ -126,20 +133,25 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
   },
   warningText: { fontSize: 12, color: Colors.warning },
-  categories: { maxHeight: 52, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border },
+  categories: {
+    maxHeight: 52,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0E8E0',
+  },
   categoriesContent: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, gap: Spacing.xs },
   chip: {
     paddingHorizontal: Spacing.md,
     paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surfaceAlt,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    backgroundColor: '#FFF3E6',
+    borderWidth: 1.5,
+    borderColor: '#FFD4A8',
   },
   chipActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  chipText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
-  chipTextActive: { color: Colors.textInverse },
-  list: { padding: Spacing.md },
+  chipText: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
+  chipTextActive: { color: 'white' },
+  list: { padding: Spacing.md, paddingBottom: 40 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.xl },
   loadingText: { marginTop: Spacing.md, color: Colors.textSecondary },
   emptyEmoji: { fontSize: 48 },
