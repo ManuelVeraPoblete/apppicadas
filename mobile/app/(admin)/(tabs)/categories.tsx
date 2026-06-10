@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/core';
 import { adminApi } from '../../../src/api/admin.api';
 import { Category } from '../../../src/types';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
+import { GradientHeader } from '../../../src/components/ui';
 
 const EMPTY_FORM = { name: '', slug: '', emoji: '' };
 
@@ -97,10 +98,14 @@ export default function AdminCategoriesScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>🏷️ Categorías</Text>
-        <Text style={styles.headerSub}>{categories.length} total</Text>
-      </View>
+      <GradientHeader dark>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerTitle}>🏷️ Categorías</Text>
+          <TouchableOpacity style={styles.addBtn} onPress={openCreate}>
+            <Text style={styles.addBtnText}>＋ Nueva</Text>
+          </TouchableOpacity>
+        </View>
+      </GradientHeader>
 
       <FlatList
         data={categories}
@@ -188,16 +193,13 @@ export default function AdminCategoriesScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: Colors.background },
+  safe:   { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
-  header: {
-    flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between',
-    padding: Spacing.lg, backgroundColor: Colors.surface,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-  },
-  title:     { fontSize: 22, fontWeight: '800', color: Colors.text },
-  headerSub: { fontSize: 13, color: Colors.textMuted },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white' },
+  addBtn: { backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
+  addBtnText: { color: 'white', fontWeight: '700', fontSize: 14 },
 
   list: { padding: Spacing.md, paddingBottom: 100 },
 

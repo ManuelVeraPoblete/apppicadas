@@ -8,6 +8,7 @@ import { useFocusEffect } from '@react-navigation/core';
 import { adminApi } from '../../../src/api/admin.api';
 import { Place } from '../../../src/types';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
+import { GradientHeader } from '../../../src/components/ui';
 
 export default function AdminPlacesScreen() {
   const [places, setPlaces]   = useState<Place[]>([]);
@@ -66,20 +67,19 @@ export default function AdminPlacesScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>📍 Locales</Text>
-        <Text style={styles.headerSub}>{pending} sin verificar</Text>
-      </View>
-
-      <View style={styles.searchBox}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar por nombre o ciudad..."
-          placeholderTextColor={Colors.textMuted}
-          value={search}
-          onChangeText={setSearch}
-        />
-      </View>
+      <GradientHeader dark>
+        <Text style={styles.headerTitle}>📍 Locales</Text>
+        {pending > 0 && <Text style={styles.headerSubtitle}>{pending} sin verificar</Text>}
+        <View style={styles.searchBar}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar por nombre o ciudad..."
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+      </GradientHeader>
 
       <FlatList
         data={filtered}
@@ -124,24 +124,22 @@ export default function AdminPlacesScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: Colors.background },
+  safe:   { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: Spacing.xxl },
   emptyText: { fontSize: 15, color: Colors.textMuted },
 
-  header: {
-    flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between',
-    padding: Spacing.lg, backgroundColor: Colors.surface,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 2 },
+  headerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginBottom: 8 },
+  searchBar: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
-  title:     { fontSize: 22, fontWeight: '800', color: Colors.text },
-  headerSub: { fontSize: 13, color: Colors.warning, fontWeight: '600' },
-
-  searchBox: { padding: Spacing.md, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  searchInput: {
-    backgroundColor: Colors.surfaceAlt, borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    fontSize: 14, color: Colors.text,
-  },
+  searchInput: { fontSize: 14, color: 'white' },
 
   list: { padding: Spacing.md, paddingBottom: 32 },
 

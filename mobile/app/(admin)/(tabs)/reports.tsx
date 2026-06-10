@@ -8,6 +8,7 @@ import { useFocusEffect } from '@react-navigation/core';
 import { adminApi } from '../../../src/api/admin.api';
 import { Report, ReportStatus } from '../../../src/types';
 import { Colors, Spacing, Radius, Shadow } from '../../../src/theme';
+import { GradientHeader } from '../../../src/components/ui';
 
 const STATUS_CONFIG: Record<ReportStatus, { label: string; color: string }> = {
   PENDING:  { label: 'Pendiente', color: Colors.warning },
@@ -90,14 +91,14 @@ export default function AdminReportsScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>🚩 Reportes</Text>
+      <GradientHeader dark>
+        <Text style={styles.headerTitle}>🚩 Reportes</Text>
         {pendingCount > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{pendingCount} pendiente{pendingCount !== 1 ? 's' : ''}</Text>
+          <View style={styles.pendingBadge}>
+            <Text style={styles.pendingBadgeText}>{pendingCount} pendiente{pendingCount !== 1 ? 's' : ''}</Text>
           </View>
         )}
-      </View>
+      </GradientHeader>
 
       {sections.length === 0 ? (
         <View style={styles.center}>
@@ -167,22 +168,14 @@ export default function AdminReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: Colors.background },
+  safe:   { flex: 1, backgroundColor: Colors.warmBackground },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyEmoji: { fontSize: 48 },
   emptyText: { fontSize: 16, color: Colors.textMuted, marginTop: Spacing.md },
 
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: Spacing.lg, backgroundColor: Colors.surface,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-  },
-  title: { fontSize: 22, fontWeight: '800', color: Colors.text },
-  badge: {
-    backgroundColor: Colors.errorLight,
-    borderRadius: Radius.full, paddingHorizontal: Spacing.sm, paddingVertical: 4,
-  },
-  badgeText: { fontSize: 12, fontWeight: '700', color: Colors.error },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: 'white', marginBottom: 4 },
+  pendingBadge: { alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 3 },
+  pendingBadgeText: { fontSize: 12, color: 'white', fontWeight: '600' },
 
   list: { padding: Spacing.md, paddingBottom: 32 },
 
