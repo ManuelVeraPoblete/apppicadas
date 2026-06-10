@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { NearbyPlace, Place } from '../../types';
 import { StarRating } from '../ui/StarRating';
-import { PriceBadge } from '../ui/Badge';
 import { Colors, Spacing, Radius, Shadow } from '../../theme';
 
 interface PlaceCardProps {
@@ -16,6 +15,8 @@ const formatDistance = (meters: number) => {
   return `${(meters / 1000).toFixed(1)} km`;
 };
 
+const PRICE_LABELS: Record<string, string> = { LOW: '$', MEDIUM: '$$', HIGH: '$$$' };
+
 export const PlaceCard: React.FC<PlaceCardProps> = ({ place, showDistance = false }) => {
   const router = useRouter();
   const distanceMeters = (place as NearbyPlace).distanceMeters;
@@ -26,35 +27,50 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, showDistance = fals
       activeOpacity={0.85}
       onPress={() => router.push(`/place/${place.id}`)}
     >
-      {place.imageUrl ? (
-        <Image
-          source={{ uri: place.imageUrl }}
-          style={styles.imagePlaceholder}
-          resizeMode="cover"
-          accessibilityLabel={place.name}
-        />
-      ) : (
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.emoji}>🍽️</Text>
-        </View>
-      )}
+      {/* Imagen izquierda */}
+      <View style={styles.imageContainer}>
+        {place.imageUrl ? (
+          <Image
+            source={{ uri: place.imageUrl }}
+            style={StyleSheet.absoluteFill}
+            resizeMode="cover"
+            accessibilityLabel={place.name}
+          />
+        ) : (
+          <View style={styles.imageFallback}>
+            <Text style={styles.emoji}>🍽️</Text>
+          </View>
+        )}
+        {showDistance && distanceMeters != null && (
+          <View style={styles.distanceBadge}>
+            <Text style={styles.distanceText}>{formatDistance(distanceMeters)}</Text>
+          </View>
+        )}
+      </View>
 
+      {/* Contenido derecho */}
       <View style={styles.content}>
-        <View style={styles.row}>
+        <View style={styles.nameRow}>
           <Text style={styles.name} numberOfLines={1}>{place.name}</Text>
-          {place.isVerified && <Text style={styles.verified}>✓</Text>}
+          {place.priceRange && (
+            <View style={styles.priceBadge}>
+              <Text style={styles.priceText}>{PRICE_LABELS[place.priceRange]}</Text>
+            </View>
+          )}
         </View>
 
         <Text style={styles.address} numberOfLines={1}>{place.address}</Text>
 
-        <View style={styles.meta}>
-          <StarRating value={place.ratingAverage} size={13} />
+        <View style={styles.metaRow}>
+          <StarRating value={place.ratingAverage} size={12} />
           <Text style={styles.reviewCount}>({place.reviewCount})</Text>
-          <PriceBadge priceRange={place.priceRange} />
-          {showDistance && distanceMeters != null && (
-            <Text style={styles.distance}>{formatDistance(distanceMeters)}</Text>
-          )}
         </View>
+
+        {place.isVerified && (
+          <View style={styles.verifiedBadge}>
+            <Text style={styles.verifiedText}>✓ Verificado</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -67,21 +83,93 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     marginBottom: Spacing.sm,
     overflow: 'hidden',
-    ...Shadow.sm,
+    ...Shadow.md,
   },
-  imagePlaceholder: {
-    width: 90,
-    backgroundColor: Colors.secondaryDark,
+  imageContainer: {
+    width: 88,
+    minHeight: 90,
+    backgroundColor: '#E85D04',
+    overflow: 'hidden',
+  },
+  imageFallback: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FFB347',
+    minHeight: 90,
   },
   emoji: { fontSize: 32 },
-  content: { flex: 1, padding: Spacing.md },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  name: { fontSize: 15, fontWeight: '700', color: Colors.text, flex: 1 },
-  verified: { fontSize: 13, color: Colors.success },
-  address: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginTop: Spacing.xs, flexWrap: 'wrap' },
-  reviewCount: { fontSize: 12, color: Colors.textMuted },
-  distance: { fontSize: 12, color: Colors.primary, fontWeight: '600' },
+  distanceBadge: {
+    position: 'absolute',
+    bottom: 6,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  distanceText: {
+    fontSize: 8,
+    fontWeight: '700',
+    color: 'white',
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    overflow: 'hidden',
+  },
+  content: {
+    flex: 1,
+    padding: Spacing.md,
+    paddingBottom: Spacing.sm,
+    justifyContent: 'center',
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 2,
+  },
+  name: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.text,
+    flex: 1,
+  },
+  priceBadge: {
+    backgroundColor: '#FFF3E6',
+    borderRadius: 6,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+  },
+  priceText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
+  address: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    marginBottom: 4,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  reviewCount: {
+    fontSize: 10,
+    color: Colors.textMuted,
+  },
+  verifiedBadge: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: '#E8F5E9',
+    borderRadius: 6,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+  },
+  verifiedText: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#2E7D32',
+  },
 });
